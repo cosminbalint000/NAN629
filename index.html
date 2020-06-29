@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html lang="en-US">
+
+<head>
+    <title>Data Formation</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+    <link href="includes/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="data">
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var fieldName = 'Fund Ticker';
+            var filterName = 'TBD NAV';
+
+            var myUrl = 'https://www.sirenetfs.com//wp-content/uploads/feeds/ForesideSiren.40YN.YN_MonthlyPerformance.csv';
+            var proxy = 'https://cors-anywhere.herokuapp.com/';
+
+            $('.download').hide();
+            $.ajax({
+                type: "GET",
+                headers: {
+                    "x-requested-with": "xhr"
+                },
+                url: proxy + myUrl,
+                dataType: "text",
+                success: function (response) {
+                    var data = $.csv.toArrays(response);
+
+                    searchIdx = data[0].indexOf(fieldName);
+                    /*if (searchIdx === -1) {
+                        alert('Field "' + fieldName + '" does not exist.');
+                        return;
+                    }*/
+                    rowIdx = -1;
+                    initialData = data.filter((row, id) => {
+                        if (row[searchIdx] == filterName) {
+                            rowIdx = id;
+                            return true;
+                        }
+                        return rowIdx !== -1 && (rowIdx + 1 == id || rowIdx + 2 == id);
+                    });
+                    /*if (filterData.length == 0) {
+                        alert('"' + filterName + '" does not exist')
+                    }*/
+
+                    filterData = initialData.map(function (val) {
+                        return val.map(function (d) {
+                            if (!d)
+                                return "-";
+                            else return d;
+                        })
+                    })
+
+
+                    effectDate1 = formatDate(filterData[0][11]);
+                    effectDate2 = formatDate(filterData[1][11]);
+                    $('.effectDate.entity1_content').append(effectDate1);
+                    $('.effectDate.entity2_content').append(effectDate2);
+
+                    entity1 = filterData[0][1];
+                    entity2 = filterData[1][1];
+                    $('.entity1').append(entity1);
+                    $('.entity2').append(entity2);
+
+                    month_net1_1 = thousands_delimiter_with_2_decimals(filterData[0][2]) + ' %';
+                    month_net1_2 = thousands_delimiter_with_2_decimals(filterData[1][2]) + ' %';
+                    $('.month_net_1.entity1_content').append(month_net1_1);
+                    $('.month_net_1.entity2_content').append(month_net1_2);
+
+                    month_net3_1 = thousands_delimiter_with_2_decimals(filterData[0][3]) + ' %';
+                    month_net3_2 = thousands_delimiter_with_2_decimals(filterData[1][3]) + ' %';
+                    $('.month_net_3.entity1_content').append(month_net3_1);
+                    $('.month_net_3.entity2_content').append(month_net3_2);
+
+                    month_net6_1 = thousands_delimiter_with_2_decimals(filterData[0][4]) + ' %';
+                    month_net6_2 = thousands_delimiter_with_2_decimals(filterData[1][4]) + ' %';
+                    $('.month_net_6.entity1_content').append(month_net6_1);
+                    $('.month_net_6.entity2_content').append(month_net6_2);
+
+                    ytd_net1 = thousands_delimiter_with_2_decimals(filterData[0][5]) + ' %';
+                    ytd_net2 = thousands_delimiter_with_2_decimals(filterData[1][5]) + ' %';
+                    $('.ytd_net.entity1_content').append(ytd_net1);
+                    $('.ytd_net.entity2_content').append(ytd_net2);
+
+
+                    year_net_1_1 = thousands_delimiter_with_2_decimals(filterData[0][7]) + ' %';
+                    year_net_1_2 = thousands_delimiter_with_2_decimals(filterData[1][7]) + ' %';
+                    $('.year_net_1.entity1_content').append(year_net_1_1);
+                    $('.year_net_1.entity2_content').append(year_net_1_2);
+
+                    year_net_3_1 = thousands_delimiter_with_2_decimals(filterData[0][8]) + ' %';
+                    year_net_3_2 = thousands_delimiter_with_2_decimals(filterData[1][8]) + ' %';
+                    $('.year_net_3.entity1_content').append(year_net_3_1);
+                    $('.year_net_3.entity2_content').append(year_net_3_2);
+
+                    year_net_5_1 = thousands_delimiter_with_2_decimals(filterData[0][9]) + ' %';
+                    year_net_5_2 = thousands_delimiter_with_2_decimals(filterData[1][9]) + ' %';
+                    $('.year_net_5.entity1_content').append(year_net_5_1);
+                    $('.year_net_5.entity2_content').append(year_net_5_2);
+
+                    itd_net_1 = thousands_delimiter_with_2_decimals(filterData[0][6]) + ' %';
+                    itd_net_2 = thousands_delimiter_with_2_decimals(filterData[1][6]) + ' %';
+                    $('.itd_net.entity1_content').append(itd_net_1);
+                    $('.itd_net.entity2_content').append(itd_net_2);
+
+                }
+            });
+        })
+    </script>
+    <script src="includes/js/main.js"></script>
+
+    <hr>
+    <span>Effect Date</span> <br />
+    <span class="entity1"></span>:
+    <span class="effectDate entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="effectDate entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="effectDate entity3_content"></span><br />
+    <hr>
+    <span>1 Day</span> <br />
+    <span class="entity1"></span>:
+    <span class="day1 entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="day1 entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="day1 entity3_content"></span><br />
+    <hr>
+    <span>1 Month Net</span> <br />
+    <span class="entity1"></span>:
+    <span class="month_net_1 entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="month_net_1 entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="month_net_1 entity3_content"></span><br />
+    <hr>
+    <span>3 Month Net</span> <br />
+    <span class="entity1"></span>:
+    <span class="month_net_3 entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="month_net_3 entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="month_net_3 entity3_content"></span><br />
+    <hr>
+    <span>YTD Net</span> <br />
+    <span class="entity1"></span>:
+    <span class="ytd_net entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="ytd_net entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="ytd_net entity3_content"></span><br />
+    <hr>
+    <span>1 Year Net</span> <br />
+    <span class="entity1"></span>:
+    <span class="year_net_1 entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="year_net_1 entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="year_net_1 entity3_content"></span><br />
+    <hr>
+    <span>3 Year Net</span> <br />
+    <span class="entity1"></span>:
+    <span class="year_net_3 entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="year_net_3 entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="year_net_3 entity3_content"></span><br />
+    <hr>
+    <span>5 Year Net</span> <br />
+    <span class="entity1"></span>:
+    <span class="year_net_5 entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="year_net_5 entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="year_net_5 entity3_content"></span><br />
+    <hr>
+    <span>ITD Net</span> <br />
+    <span class="entity1"></span>:
+    <span class="itd_net entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="itd_net entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="itd_net entity3_content"></span><br />
+    <hr>
+    <span>Inception Date</span> <br />
+    <span id="inception_date"></span>
+    <span class="entity1"></span>:
+    <span class="inception_date entity1_content"></span><br />
+    <span class="entity2"></span>:
+    <span class="inception_date entity2_content"></span><br />
+    <span class="entity3"></span>:
+    <span class="inception_date entity3_content"></span><br />
+</body>
+
+</html>
